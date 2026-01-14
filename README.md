@@ -3,7 +3,7 @@
 ![Project Banner](https://img.shields.io/badge/Status-Live-green) ![Tech](https://img.shields.io/badge/Built%20With-Next.js%20%7C%20Supabase%20%7C%20Gemini-blueviolet)
 
 ## 📋 Project Overview
-This project is a submission for **Figmenta Internship Brief N°01**. It is a full-stack AI agent system consisting of two parts:
+This project is a submission for **Figmenta Internship Brief**. It is a full-stack AI agent system consisting of two parts:
 1.  **The Brain (Admin Dashboard):** A "Neural Interface" web app where the admin configures the bot's personality and manages its memory.
 2.  **The Body (Discord Bot):** A Node.js bot that connects to Discord, retrieves its instructions from the database, and converses using Google Gemini 1.5 Flash.
 
@@ -117,5 +117,4 @@ To prioritize reliability and speed (as per the brief), several architectural de
 │   ├── components/ui/  # Shadcn UI components
 │   └── lib/            # Supabase client utilities
 └── public/             # Static assets
-```
 ```
