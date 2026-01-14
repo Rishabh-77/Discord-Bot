@@ -1,10 +1,3 @@
-Here is a professional, high-quality `README.md` file tailored specifically for your submission. It highlights the technical depth, the "Vibe Coding" approach, and provides clear instructions for the reviewers.
-
-**Copy the code below and save it as `README.md` in your root folder.**
-
-***
-
-
 # Figmenta Discord Copilot (Admin-Controlled Agent)
 
 ![Project Banner](https://img.shields.io/badge/Status-Live-green) ![Tech](https://img.shields.io/badge/Built%20With-Next.js%20%7C%20Supabase%20%7C%20Gemini-blueviolet)
