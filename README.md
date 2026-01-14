@@ -4,7 +4,7 @@ Here is a professional, high-quality `README.md` file tailored specifically for 
 
 ***
 
-```markdown
+
 # Figmenta Discord Copilot (Admin-Controlled Agent)
 
 ![Project Banner](https://img.shields.io/badge/Status-Live-green) ![Tech](https://img.shields.io/badge/Built%20With-Next.js%20%7C%20Supabase%20%7C%20Gemini-blueviolet)
@@ -67,7 +67,7 @@ create policy "Owner manages everything" on agent_config for all using (auth.uid
 
 -- Enable Realtime
 alter table agent_config replica identity full;
-```
+
 
 ### 2. Environment Variables
 Create a `.env.local` file in the root directory:
