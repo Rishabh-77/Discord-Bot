@@ -2,6 +2,7 @@ require('dotenv').config();
 const { Client, GatewayIntentBits } = require('discord.js');
 const { GoogleGenerativeAI } = require('@google/generative-ai');
 const { createClient } = require('@supabase/supabase-js');
+const http = require('http'); // <--- New Import
 
 // 1. Setup Connections
 const discord = new Client({
@@ -23,8 +24,7 @@ discord.on('messageCreate', async (message) => {
   if (message.author.bot) return;
 
   try {
-    // 1. Fetch Config AND Memory from Supabase
-    // We need 'id' to update the row later
+    // 1. Fetch Config
     const { data: config, error } = await supabase
       .from('agent_config')
       .select('id, system_prompt, allowed_channel_ids, conversation_summary')
@@ -43,61 +43,51 @@ discord.on('messageCreate', async (message) => {
     await message.channel.sendTyping();
 
     // 3. Prepare Memory
-    // If memory is null, start fresh
     const currentSummary = config.conversation_summary || "No previous conversation.";
-    console.log("📖 Reading Context:", currentSummary.substring(0, 50) + "...");
-
-    // 4. Construct the Prompt for JSON Output
-    // We force Gemini to reply in JSON so we can separate the Reply from the Summary
+    
+    // 4. Ask Gemini
     const model = genAI.getGenerativeModel({ 
-      model: "gemini-3-flash-preview",
+      model: "gemini-1.5-flash", // Using Stable version
       generationConfig: { responseMimeType: "application/json" } 
     });
     
     const prompt = `
     You are an AI assistant.
-    
-    SYSTEM INSTRUCTIONS:
-    ${config.system_prompt}
-
-    PREVIOUS MEMORY (Summary of past chat):
-    ${currentSummary}
-
-    NEW USER MESSAGE:
-    ${message.content}
-
-    TASK:
-    1. Reply to the user naturally.
-    2. Create a NEW summary that merges the OLD memory with this NEW interaction.
-    
-    OUTPUT JSON FORMAT:
-    {
-      "reply": "Your response to the user",
-      "new_summary": "The updated summary of the conversation history"
-    }
+    SYSTEM INSTRUCTIONS: ${config.system_prompt}
+    PREVIOUS MEMORY: ${currentSummary}
+    NEW USER MESSAGE: ${message.content}
+    TASK: Reply to user and update summary.
+    OUTPUT JSON FORMAT: { "reply": "string", "new_summary": "string" }
     `;
 
     const result = await model.generateContent(prompt);
     const text = result.response.text();
-
-    // 5. Parse JSON
     const data = JSON.parse(text);
     
-    // 6. Send Reply to Discord
+    // 5. Send Reply
     await message.reply(data.reply);
 
-    // 7. Save New Memory to Database
-    await supabase
+    // 6. Save New Memory
+    const updateResult = await supabase
       .from('agent_config')
       .update({ conversation_summary: data.new_summary })
-      .eq('id', config.id);
-
-    console.log("🧠 Memory updated in DB.");
+      .eq('id', config.id)
 
   } catch (err) {
     console.error('🔥 Error:', err);
-    await message.channel.send("I'm having trouble accessing my memory database.");
   }
 });
 
 discord.login(process.env.DISCORD_TOKEN);
+
+
+// This creates a tiny web server that listens on the port Render assigns.
+// It stops Render from killing the bot for "Timeout".
+const port = process.env.PORT || 3000;
+http.createServer((req, res) => {
+  res.writeHead(200, { 'Content-Type': 'text/plain' });
+  res.write('Figmenta Bot is Alive!');
+  res.end();
+}).listen(port, () => {
+  console.log(`🌍 Keep-Alive Server listening on port ${port}`);
+});
