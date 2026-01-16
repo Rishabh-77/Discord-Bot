@@ -47,7 +47,7 @@ discord.on('messageCreate', async (message) => {
     
     // 4. Ask Gemini
     const model = genAI.getGenerativeModel({ 
-      model: "gemini-1.5-flash", // Using Stable version
+      model: "gemini-3-flash-preview", // Using Stable version
       generationConfig: { responseMimeType: "application/json" } 
     });
     
